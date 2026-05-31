@@ -88,7 +88,7 @@ function _update() {
 
         _prevTime = now;
 
-        _label.text = '🔥' + temp + '°C 🎛️' + big + '/' + little + 'G ↓' + netDown + ' ↑' + netUp + ' R' + diskR + ' W' + diskW + ' �' + memGB + 'G';
+        _label.text = '🔥' + temp + '°C 🎛️' + big + '/' + little + 'G ↓' + netDown + ' ↑' + netUp + ' R' + diskR + ' W' + diskW + ' ǔ' + memGB + 'G';
     } catch (e) {
         logError(e, 'NovaStatus');
     }
