@@ -1,24 +1,32 @@
-const { GLib, St, Clutter } = imports.gi;
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import {Button} from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import St from 'gi://St';
+import GLib from 'gi://GLib';
+import Clutter from 'gi://Clutter';
+
+const FIRE = '\u{1F525}';
+const KNOB = '\u{1F39B}\uFE0F';
+const DOWN = '\u2193';
+const UP   = '\u2191';
+const CHART = '\u{1F4CA}';
+const DEG = '\u00B0';
 
 let _indicator = null;
 let _timeout = null;
-
+let _label = null;
 let _prevRx = 0;
 let _prevTx = 0;
 let _prevDiskR = 0;
 let _prevDiskW = 0;
 let _prevTime = 0;
 
-function init() {
-}
-
 function _read(path) {
     try {
         let [ok, contents] = GLib.file_get_contents(path);
         if (!ok) return null;
-        return imports.byteArray.toString(contents).trim();
+        let decoder = new TextDecoder();
+        return decoder.decode(contents).trim();
     } catch (e) {
         return null;
     }
@@ -42,7 +50,7 @@ function _update() {
         let b0 = parseInt(_read('/sys/devices/system/cpu/cpufreq/policy4/scaling_cur_freq') || '0') / 1e6;
         let b1 = parseInt(_read('/sys/devices/system/cpu/cpufreq/policy6/scaling_cur_freq') || '0') / 1e6;
         let big = ((b0 + b1) / 2).toFixed(1);
-        let little = (parseInt(_read('/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq') || '0') / 1e6).toFixed(1);
+        let lit = (parseInt(_read('/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq') || '0') / 1e6).toFixed(1);
 
         let meminfo = _read('/proc/meminfo') || '';
         let memMatch = meminfo.match(/MemAvailable:\s+(\d+)/);
@@ -54,12 +62,12 @@ function _update() {
         for (let i = 0; i < netLines.length; i++) {
             let line = netLines[i].trim();
             if (!line) continue;
-            let colon = line.indexOf(':');
-            if (colon === -1) continue;
-            let iface = line.substring(0, colon).trim();
-            if (iface === 'lo' || iface.startsWith('vir') || iface.startsWith('docker') || iface.startsWith('br-'))
+            let ci = line.indexOf(':');
+            if (ci < 0) continue;
+            let iface = line.substring(0, ci).trim();
+            if (iface === 'lo' || iface.indexOf('vir') === 0 || iface.indexOf('docker') === 0 || iface.indexOf('br-') === 0)
                 continue;
-            let parts = line.substring(colon + 1).trim().split(/\s+/);
+            let parts = line.substring(ci + 1).trim().split(/\s+/);
             rxBytes += parseInt(parts[0]) || 0;
             txBytes += parseInt(parts[8]) || 0;
         }
@@ -88,40 +96,39 @@ function _update() {
 
         _prevTime = now;
 
-        _label.text = '\u{1F525}' + temp + '\u00B0C \u{1F39B}\uFE0F' + big + '/' + little + 'G \u2193' + netDown + ' \u2191' + netUp + ' R' + diskR + ' W' + diskW + ' \u{1F4CA}' + memGB + 'G';
+        _label.text = FIRE + temp + DEG + 'C ' + KNOB + big + '/' + lit + 'G ' + DOWN + netDown + ' ' + UP + netUp + ' R' + diskR + ' W' + diskW + ' ' + CHART + memGB + 'G';
     } catch (e) {
         logError(e, 'NovaStatus');
     }
 }
 
-function enable() {
-    _indicator = new PanelMenu.Button(0.0, 'Nova Status', false);
-
-    _label = new St.Label({
-        text: '\u{1F525}...\u00B0C',
-        y_align: Clutter.ActorAlign.CENTER,
-        y_expand: true,
-        style_class: 'nova-status-label',
-    });
-    _indicator.add_child(_label);
-
-    Main.panel.addToStatusArea('nova-status', _indicator, 0, 'right');
-
-    _update();
-    _timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, function () {
+export default class NovaStatusExtension extends Extension {
+    enable() {
+        _indicator = new Button(0.0, 'Nova Status', false);
+        _label = new St.Label({
+            text: FIRE + '...' + DEG + 'C',
+            y_align: Clutter.ActorAlign.CENTER,
+            y_expand: true,
+            style_class: 'nova-status-label'
+        });
+        _indicator.add_child(_label);
+        Main.panel.addToStatusArea('nova-status', _indicator, 0, 'right');
         _update();
-        return GLib.SOURCE_CONTINUE;
-    });
-}
+        _timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
+            _update();
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
 
-function disable() {
-    if (_timeout) {
-        GLib.source_remove(_timeout);
-        _timeout = 0;
+    disable() {
+        if (_timeout) {
+            GLib.source_remove(_timeout);
+            _timeout = 0;
+        }
+        if (_indicator) {
+            _indicator.destroy();
+            _indicator = null;
+        }
+        _label = null;
     }
-    if (_indicator) {
-        _indicator.destroy();
-        _indicator = null;
-    }
-    _label = null;
 }
