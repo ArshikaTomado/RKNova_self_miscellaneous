@@ -88,7 +88,7 @@ function _update() {
 
         _prevTime = now;
 
-        _label.text = '🔥' + temp + '°C 🎛️' + big + '/' + little + 'G ↓' + netDown + ' ↑' + netUp + ' R' + diskR + ' W' + diskW + ' ǔ' + memGB + 'G';
+        _label.text = '\u{1F525}' + temp + '\u00B0C \u{1F39B}\uFE0F' + big + '/' + little + 'G \u2193' + netDown + ' \u2191' + netUp + ' R' + diskR + ' W' + diskW + ' \u{1F4CA}' + memGB + 'G';
     } catch (e) {
         logError(e, 'NovaStatus');
     }
@@ -98,7 +98,7 @@ function enable() {
     _indicator = new PanelMenu.Button(0.0, 'Nova Status', false);
 
     _label = new St.Label({
-        text: '🔥...°C',
+        text: '\u{1F525}...\u00B0C',
         y_align: Clutter.ActorAlign.CENTER,
         y_expand: true,
         style_class: 'nova-status-label',
