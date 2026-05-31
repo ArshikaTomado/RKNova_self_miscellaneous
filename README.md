@@ -10,9 +10,7 @@ Random experiments & tools for my **Indiedroid Nova** (RK3588S, Armbian).
 
 A minimal GNOME Shell extension for real-time system monitoring on the top bar — designed for RK3588's big.LITTLE architecture.
 
-```
-:fire: 52C :control_knobs: 2.4/1.8G :arrow_down: 12K :arrow_up: 3K R0B W1.2M :bar_chart: 9.3G
-```
+> :fire: 52C :control_knobs: 2.4/1.8G :arrow_down: 12K :arrow_up: 3K R0B W1.2M :bar_chart: 9.3G
 
 | Icon | Meaning | Source |
 |------|---------|--------|
