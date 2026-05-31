@@ -10,21 +10,19 @@ Random experiments & tools for my **Indiedroid Nova** (RK3588S, Armbian).
 
 A minimal GNOME Shell extension for real-time system monitoring on the top bar — designed for RK3588's big.LITTLE architecture.
 
-Display format:
-
 ```
-[Fire] 52C [Knob] 2.4/1.8G [Down] 12K [Up] 3K R0B W1.2M [Chart] 9.3G
+:fire: 52C :control_knobs: 2.4/1.8G :arrow_down: 12K :arrow_up: 3K R0B W1.2M :bar_chart: 9.3G
 ```
 
-| Label | Meaning | Data Source |
-|-------|---------|-------------|
-| Fire | Package temperature | `/sys/class/thermal/thermal_zone0/temp` |
-| Knob | Big/LITTLE core frequency (GHz avg) | `/sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq` |
-| Down | Download speed | `/proc/net/dev` delta |
-| Up | Upload speed | `/proc/net/dev` delta |
+| Icon | Meaning | Source |
+|------|---------|--------|
+| :fire: | Package temperature | `/sys/class/thermal/thermal_zone0/temp` |
+| :control_knobs: | Big/LITTLE core freq avg (GHz) | `/sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq` |
+| :arrow_down: | Download speed | `/proc/net/dev` delta |
+| :arrow_up: | Upload speed | `/proc/net/dev` delta |
 | R | Disk read speed | `/sys/block/mmcblk1/stat` delta |
 | W | Disk write speed | `/sys/block/mmcblk1/stat` delta |
-| Chart | Available memory (GB) | `/proc/meminfo` MemAvailable |
+| :bar_chart: | Available memory (GB) | `/proc/meminfo` MemAvailable |
 
 **Install:**
 
