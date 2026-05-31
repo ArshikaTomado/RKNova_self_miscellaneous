@@ -1,0 +1,8 @@
+{
+    "uuid": "nova-status@trae",
+    "name": "Nova Status Monitor",
+    "description": "Display RK3588S system status on top bar: temperature, CPU frequencies, network speed, memory, disk I/O",
+    "shell-version": ["50"],
+    "url": "",
+    "version": 1
+}
